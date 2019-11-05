@@ -1,7 +1,7 @@
 # Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
 # working directory, into a temporary folder, and execute your Terraform commands in that folder.
 terraform {
-  source = "git::git@github.com:jamesjsanders/tf-tgrunt-modules.git//kms?ref=0.0.2"
+  source = "git::git@github.com:jamesjsanders/tf-tgrunt-modules.git//kms?ref=0.0.5"
 }
 
 # Include all settings from the root terragrunt.hcl file
