@@ -1,0 +1,2 @@
+# These variables apply to this entire region.
+aws_region: "us-east-1"
