@@ -2,7 +2,7 @@
 
 ## Setup
 
-Account
+* Account
 * aws (cloud provider)
   * terragrunt.hcl = state file
   * region ( aws region )
