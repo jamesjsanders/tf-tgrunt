@@ -1,6 +1,6 @@
 # Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
 terraform {
-  source = "git::git@github.com/terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v1.0.0"
+  source = "git::git@github.com:jamesjsanders/tf-tgrunt-modules.git//s3?ref=0.0.7"
 }
 
 # Include all settings from the root terragrunt.hcl file
@@ -10,6 +10,7 @@ include {
 
 dependency "kms" {
   config_path = "../kms"
+  skip_outputs = true
 }
 
 

@@ -22,6 +22,6 @@ inputs = merge(
     file("${get_terragrunt_dir()}/${find_in_parent_folders("region.yaml", local.default_yaml_path)}"),
   ),
   {
-    aws_profile                  = "default"
+    aws_profile   = "default"
   },
 )
