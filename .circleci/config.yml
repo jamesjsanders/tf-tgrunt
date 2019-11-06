@@ -1,0 +1,84 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: alpine/terragrunt:0.12.13
+  environment:
+    TG_IN_AUTOMATION: true
+
+jobs:
+  init:
+    <<: *defaults
+    steps:
+      - checkout
+      - run:
+          name: aws auth
+          command: mkdir ~/.aws; echo -e "[default]\naws_access_key_id=$AWS_KEY\naws_secret_access_key=$AWS_SECRET\n" > ~/.aws/credentials
+      - run:
+          name: init
+          command: cd ~/repo/prorated/aws && terragrunt init --input=false
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+      - persist_to_workspace:
+          root: ~/.aws
+          paths: .
+  plan:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - attach_workspace:
+          at: ~/.aws
+      - run:
+          name: select workspace
+          command: terraform workspace select dev
+      - run:
+          name: plan
+          command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false
+      - store_artifacts:
+          path: ~/repo/prorated/aws
+          destination: tfgruntplan
+      - persist_to_workspace:
+          root: ~/repo
+          paths: .
+      - persist_to_workspace:
+          root: ~/.aws
+          paths: .
+  apply:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - attach_workspace:
+          at: ~/.aws
+      - run:
+          name: select workspace
+          command: terraform workspace select dev
+      - run:
+          name: apply
+          command: cd ~/repo/prorated/aws && terragrun apply-all --input=false
+      - store_artifacts:
+          path: ~/repo/tfresult
+          destination: tfresult
+      - persist_to_workspace:
+          root: ~/.aws
+          paths: .
+
+workflows:
+  version: 2
+  build_deploy:
+    jobs:
+      - init
+      - plan:
+          requires:
+            - init
+      - apply:
+          type: approval
+          requires:
+            - plan
+          filters:
+            branches:
+              only: 
+                - master
