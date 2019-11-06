@@ -10,7 +10,6 @@ include {
 
 dependency "kms" {
   config_path = "../kms"
-  skip_outputs = true
 }
 
 
@@ -21,7 +20,7 @@ inputs = {
   server_side_encryption_configuration = {
     rule = {
       apply_server_side_encryption_by_default = {
-        kms_master_key_id = dependency.kms.outputs.arn
+        kms_master_key_id = dependency.kms.outputs.aws_kms_alias_arn
         sse_algorithm     = "aws:kms"
       }
     }
