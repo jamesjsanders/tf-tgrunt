@@ -17,7 +17,7 @@ jobs:
           command: mkdir ~/.aws; echo -e "[default]\naws_access_key_id=$AWS_KEY\naws_secret_access_key=$AWS_SECRET\n" > ~/.aws/credentials
       - run:
           name: init
-          command: terragrunt init --input=false --terragrunt-working-dir=~/repo/prorated/aws --terragrunt-non-interactive
+          command: cd ~/repo/prorated/aws && terragrunt init --input=false --terragrunt-non-interactive
       - persist_to_workspace:
           root: ~/repo
           paths: .
