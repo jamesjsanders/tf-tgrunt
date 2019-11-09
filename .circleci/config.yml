@@ -32,6 +32,9 @@ jobs:
       - attach_workspace:
           at: ~/.aws
       - run:
+          name: github key
+          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+      - run:
           name: plan
           command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false --terragrunt-non-interactive
       - store_artifacts:
@@ -43,6 +46,9 @@ jobs:
       - persist_to_workspace:
           root: ~/.aws
           paths: .
+      - persist_to_workspace:
+          root: ~/.ssh
+          paths: .
   apply:
     <<: *defaults
     steps:
@@ -50,6 +56,8 @@ jobs:
           at: ~/repo
       - attach_workspace:
           at: ~/.aws
+      - attach_workspace:
+          at: ~/.ssh
       - run:
           name: apply
           command: cd ~/repo/prorated/aws && terragrunt apply-all --input=false --terragrunt-non-interactive
