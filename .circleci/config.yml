@@ -62,6 +62,9 @@ jobs:
       - attach_workspace:
           at: ~/.ssh
       - run:
+          name: env passwords
+          command:  echo -e rds_db_root_password\:\ \"$RDS_DB_ROOT_PASSWORD\" > ~/repo/prorated/aws/us-east-1/env.yaml
+      - run:
           name: apply
           command: cd ~/repo/prorated/aws && terragrunt apply-all --input=false --terragrunt-non-interactive
       - store_artifacts:
