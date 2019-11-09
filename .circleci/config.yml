@@ -33,7 +33,7 @@ jobs:
           at: ~/.aws
       - run:
           name: github key
-          command: ssh-keyscan github.com >> ~/.ssh/known_hosts
+          command: mkdir ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: plan
           command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false --terragrunt-non-interactive
