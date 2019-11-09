@@ -40,9 +40,6 @@ jobs:
       - run:
           name: plan
           command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false --terragrunt-non-interactive
-      - store_artifacts:
-          path: ~/repo/prorated/aws
-          destination: tfgruntplan
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -65,7 +62,7 @@ jobs:
           name: apply
           command: cd ~/repo/prorated/aws && terragrunt apply-all --input=false --terragrunt-non-interactive
       - store_artifacts:
-          path: ~/repo/tfresult
+          path: ~/repo
           destination: tfresult
 workflows:
   version: 2
