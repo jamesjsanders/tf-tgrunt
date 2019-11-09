@@ -17,7 +17,7 @@ jobs:
           command: mkdir ~/.aws; echo -e "[default]\naws_access_key_id=$AWS_KEY\naws_secret_access_key=$AWS_SECRET\n" > ~/.aws/credentials
       - run:
           name: init
-          command: cd ~/repo/prorated/aws && terragrunt init --input=false --terragrunt-non-interactive
+          command: terragrunt init --input=false --terragrunt-working-dir=~/repo/prorated/aws --terragrunt-non-interactive
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -39,7 +39,7 @@ jobs:
           command:  echo -e rds_db_root_password\:\ \"$RDS_DB_ROOT_PASSWORD\" > ~/repo/prorated/aws/us-east-1/env.yaml
       - run:
           name: plan
-          command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false --terragrunt-non-interactive
+          command:  terragrunt plan-all --input=false --terragrunt-working-dir=~/repo/prorated/aws --terragrunt-non-interactive
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -66,10 +66,28 @@ jobs:
           command:  echo -e rds_db_root_password\:\ \"$RDS_DB_ROOT_PASSWORD\" > ~/repo/prorated/aws/us-east-1/env.yaml
       - run:
           name: apply
-          command: cd ~/repo/prorated/aws && terragrunt apply-all --input=false --terragrunt-non-interactive
+          command: terragrunt apply-all --input=false --terragrunt-working-dir=~/repo/prorated/aws --terragrunt-non-interactive
       - store_artifacts:
           path: ~/repo
           destination: tfresult
+  destroy:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - attach_workspace:
+          at: ~/.aws
+      - attach_workspace:
+          at: ~/.ssh
+      - run:
+          name: env passwords
+          command:  echo -e rds_db_root_password\:\ \"\" > ~/repo/prorated/aws/us-east-1/env.yaml
+      - run:
+          name: apply
+          command: terragrunt destroy-all --input=false --terragrunt-working-dir=~/repo/prorated/aws --terragrunt-non-interactive
+      - store_artifacts:
+          path: ~/repo
+          destination: tfdestroy
 workflows:
   version: 2
   build_deploy:
@@ -93,3 +111,21 @@ workflows:
             branches:
               only: 
                 - master
+      - destroy-approval:
+          type: approval
+          requires:
+            - init
+          filters:
+            branches:
+              only: 
+                - master
+      - destroy:
+          requires:
+            - destroy-approval
+          filters:
+            branches:
+              only: 
+                - master
+            tags:
+              only: /^Destroy-((0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-[12]\d{3}).*/
+
