@@ -49,6 +49,9 @@ jobs:
       - persist_to_workspace:
           root: ~/.ssh
           paths: .
+      - store_artifacts:
+          path: ~/repo
+          destination: tfplan
   apply:
     <<: *defaults
     steps:
