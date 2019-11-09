@@ -1,2 +1,4 @@
 # These variables apply to this entire region.
 aws_region: "us-east-1"
+availability_zone_b: "us-east-1b"
+availability_zone_d: "us-east-1d"

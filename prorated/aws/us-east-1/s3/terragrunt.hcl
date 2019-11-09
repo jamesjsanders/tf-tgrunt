@@ -1,6 +1,6 @@
 # Terragrunt will copy the Terraform configurations specified by the source parameter, along with any files in the
 terraform {
-  source = "git::git@github.com:jamesjsanders/tf-tgrunt-modules.git//s3?ref=0.0.8"
+  source = "git::git@github.com:jamesjsanders/tf-tgrunt-modules.git//s3?ref=0.0.11"
 }
 
 # Include all settings from the root terragrunt.hcl file

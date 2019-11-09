@@ -13,7 +13,7 @@ remote_state {
 
 # GLOBAL PARAMETERS - These variables apply to all configurations in this subfolder. These are automatically merged into the child
 locals {
-  default_yaml_path = find_in_parent_folders("global.yaml")
+  default_yaml_path = "${find_in_parent_folders("empty.yaml")}"
 }
 
 # Configure root level variables that all resources can inherit.
@@ -22,6 +22,7 @@ inputs = merge(
     file("${get_terragrunt_dir()}/${find_in_parent_folders("region.yaml", local.default_yaml_path)}"),
   ),
   {
-    aws_profile   = "default"
+    aws_profile = "default"
+    environment = "sandbox"
   },
 )

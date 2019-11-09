@@ -1,2 +1,0 @@
-# These variables apply to this entire environment. They are automatically pulled in using yamldecode and merged into
-environment: "sandbox"
