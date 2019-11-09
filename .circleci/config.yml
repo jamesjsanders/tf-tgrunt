@@ -17,7 +17,7 @@ jobs:
           command: mkdir ~/.aws; echo -e "[default]\naws_access_key_id=$AWS_KEY\naws_secret_access_key=$AWS_SECRET\n" > ~/.aws/credentials
       - run:
           name: init
-          command: cd ~/repo/prorated/aws && terragrunt init --input=false
+          command: cd ~/repo/prorated/aws && terragrunt init --input=false --terragrunt-non-interactive
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -33,7 +33,7 @@ jobs:
           at: ~/.aws
       - run:
           name: plan
-          command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false
+          command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false --terragrunt-non-interactive
       - store_artifacts:
           path: ~/repo/prorated/aws
           destination: tfgruntplan
@@ -52,7 +52,7 @@ jobs:
           at: ~/.aws
       - run:
           name: apply
-          command: cd ~/repo/prorated/aws && terragrun apply-all --input=false
+          command: cd ~/repo/prorated/aws && terragrunt apply-all --input=false --terragrunt-non-interactive
       - store_artifacts:
           path: ~/repo/tfresult
           destination: tfresult
