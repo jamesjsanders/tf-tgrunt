@@ -67,10 +67,6 @@ jobs:
       - store_artifacts:
           path: ~/repo/tfresult
           destination: tfresult
-      - persist_to_workspace:
-          root: ~/.aws
-          paths: .
-
 workflows:
   version: 2
   build_deploy:
@@ -79,10 +75,17 @@ workflows:
       - plan:
           requires:
             - init
-      - apply:
+      - prod-approval:
           type: approval
           requires:
             - plan
+          filters:
+            branches:
+              only: 
+                - master
+      - apply:
+          requires:
+            - prod-approval
           filters:
             branches:
               only: 
