@@ -21,6 +21,9 @@ inputs = merge(
   yamldecode(
     file("${get_terragrunt_dir()}/${find_in_parent_folders("region.yaml", local.default_yaml_path)}"),
   ),
+  yamldecode(
+    file("${get_terragrunt_dir()}/${find_in_parent_folders("env.yaml", local.default_yaml_path)}"),
+  ),
   {
     aws_profile = "default"
     environment = "sandbox"
