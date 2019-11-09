@@ -36,7 +36,7 @@ jobs:
           command: mkdir ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: env passwords
-          command: echo -e "rds_db_root_password:$RDS_DB_ROOT_PASSWORD" > ~/repo/prorated/aws/us-east-1/env.yaml
+          command: echo -e "rds_db_root_password:\"$RDS_DB_ROOT_PASSWORD\"" > ~/repo/prorated/aws/us-east-1/env.yaml
       - run:
           name: plan
           command:  cd ~/repo/prorated/aws && terragrunt plan-all --input=false --terragrunt-non-interactive
