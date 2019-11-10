@@ -1,7 +1,28 @@
 #!/bin/bash
 
+CURDIR=$(PWD)
 changed=()
 changed=$(git whatchanged --oneline --name-only --format="" -n1)
+
+function ENVVAR {
+  THISDIR=$(PWD)
+  echo \#\!\/bin\/bash > $THISDIR/env.sh
+  chmod 775 $THISDIR/env.sh
+  DIRS=$(find . -type d -maxdepth 1 -mindepth 1 -exec basename {} \; |grep -v .terraform)
+  for DIR in $DIRS; do
+  echo $DIR
+    echo -n "" > $DIR/env.yaml
+    for VARNAME in $(cat $CURDIR/.circleci/env-vars); do 
+      LOWVAR=$(echo $VARNAME | tr '[:upper:]' '[:lower:]')
+      echo echo\ $LOWVAR\\\:\\\ \\\"\$$VARNAME\\\"\ \>\>\ $DIR/env.yaml >> $THISDIR/env.sh
+    done
+    bash -c "$THISDIR/env.sh"
+  done
+}
+
+function RUN {
+  terragrunt $CMD --input=false --terragrunt-non-interactive
+}
 
 for path in ${changed[@]}; do
   case ${path%%/*} in
@@ -12,7 +33,7 @@ for path in ${changed[@]}; do
     testing=true
   ;;
   staging)
-    taging=true
+    staging=true
   ;;
   sandbox)
     sandbox=true
@@ -42,11 +63,11 @@ case $1 in
   ;;
 esac
 
-[[ $sandbox     ]] && cd sandbox     && terragrunt $CMD --input=false --terragrunt-non-interactive
-[[ $testing     ]] && cd testing     && terragrunt $CMD --input=false --terragrunt-non-interactive
-[[ $development ]] && cd development && terragrunt $CMD --input=false --terragrunt-non-interactive
-[[ $staging     ]] && cd staging     && terragrunt $CMD --input=false --terragrunt-non-interactive
-[[ $production  ]] && cd production  && terragrunt $CMD --input=false --terragrunt-non-interactive
+[[ $sandbox     ]] && cd sandbox     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi
+[[ $testing     ]] && cd testing     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
+[[ $development ]] && cd development && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
+[[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
+[[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
 
 if [ $? -ge 0 ]; then
   echo "terragrunt $CMD successful"
