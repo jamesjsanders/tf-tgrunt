@@ -1,5 +1,4 @@
 #!/bin/bash
-set -eo pipefail
 
 changed=()
 changed=$(git whatchanged --oneline --name-only --format="" -n1)
@@ -27,34 +26,32 @@ done
 case $1 in
   init)
     echo "Running tarragrunt init"
-    [[ $sandbox     ]] && cd sandbox && terragrunt init --input=false --terragrunt-non-interactive
-    [[ $testing     ]] && cd testing && terragrunt init --input=false --terragrunt-non-interactive
-    [[ $development ]] && cd development && terragrunt init --input=false --terragrunt-non-interactive
-    [[ $staging     ]] && cd staging && terragrunt init --input=false --terragrunt-non-interactive
-    [[ $production  ]] && cd production && terragrunt init --input=false --terragrunt-non-interactive
+    CMD="init"
   ;;
   plan)
     echo "Running tarragrunt plan"
-    [[ $sandbox     ]] && cd sandbox && terragrunt plan-all --input=false --terragrunt-non-interactiv&
-    [[ $testing     ]] && cd testing && terragrunt plan-all --input=false --terragrunt-non-interactiv&
-    [[ $development ]] && cd development && terragrunt plan-all --input=false --terragrunt-non-interactiv&
-    [[ $staging     ]] && cd staging && terragrunt plan-all --input=false --terragrunt-non-interactiv&
-    [[ $production  ]] && cd production && terragrunt plan-all --input=false --terragrunt-non-interactive
+    CMD="plan-all"
   ;;
   apply)
     echo "Running tarragrunt apply"
-    [[ $sandbox     ]] && cd sandbox && terragrunt apply-all --input=false --terragrunt-non-interactiv&
-    [[ $testing     ]] && cd testing && terragrunt apply-all --input=false --terragrunt-non-interactiv&
-    [[ $development ]] && cd development && terragrunt apply-all --input=false --terragrunt-non-interactiv&
-    [[ $staging     ]] && cd staging && terragrunt apply-all --input=false --terragrunt-non-interactiv&
-    [[ $production  ]] && cd production && terragrunt apply-all --input=false --terragrunt-non-interactive
+    CMD="apply-all"
   ;;
   destroy)
     echo "Running tarragrunt destroy"
-    [[ $sandbox     ]] && cd sandbox && terragrunt destroy-all --input=false --terragrunt-non-interactiv&
-    [[ $testing     ]] && cd testing && terragrunt destroy-all --input=false --terragrunt-non-interactiv&
-    [[ $development ]] && cd development && terragrunt destroy-all --input=false --terragrunt-non-interactiv&
-    [[ $staging     ]] && cd staging && terragrunt destroy-all --input=false --terragrunt-non-interactiv&
-    [[ $production  ]] && cd production && terragrunt destroy-all --input=false --terragrunt-non-interactive
+    CMD="destroy-all"
   ;;
 esac
+
+[[ $sandbox     ]] && cd sandbox     && terragrunt $CMD --input=false --terragrunt-non-interactive
+[[ $testing     ]] && cd testing     && terragrunt $CMD --input=false --terragrunt-non-interactive
+[[ $development ]] && cd development && terragrunt $CMD --input=false --terragrunt-non-interactive
+[[ $staging     ]] && cd staging     && terragrunt $CMD --input=false --terragrunt-non-interactive
+[[ $production  ]] && cd production  && terragrunt $CMD --input=false --terragrunt-non-interactive
+
+if [ $? -ge 0 ]; then
+  echo "terragrunt $CMD successful"
+  exit 0
+else
+  echo "terragrunt $CMD exited on error" >&2 
+  exit 1
+fi
