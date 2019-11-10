@@ -5,7 +5,7 @@
 At the root of this repository contains environment name directories, ex: ***sandbox*** which in this case is dedicated to an AWS account.
 In this example the ***sandbox*** directory contains a subfolder named as the region in which has been targeted for terragrunt deployments. 
   
-# Repository current layout:  
+# Repository current layout
 
 Uses this following folder hierarchy:
 
