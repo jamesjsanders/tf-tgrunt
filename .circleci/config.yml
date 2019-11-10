@@ -147,5 +147,6 @@ workflows:
             branches:
               only: 
                 - master
+          filters:
             tags:
               only: /^Destroy-((0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-[12]\d{3}).*/
