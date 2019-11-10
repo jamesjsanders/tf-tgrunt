@@ -36,7 +36,7 @@ jobs:
           command: mkdir ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
       - run:
           name: plan
-          command: ././circleci/scripts/run.sh plan
+          command: ./.circleci/scripts/run.sh plan
       - persist_to_workspace:
           root: ~/repo
           paths: .
@@ -60,7 +60,7 @@ jobs:
           at: ~/.ssh
       - run:
           name: apply
-          command: ././circleci/scripts/run.sh apply
+          command: ./.circleci/scripts/run.sh apply
       - store_artifacts:
           path: ~/repo
           destination: tfresult
@@ -75,7 +75,7 @@ jobs:
           at: ~/.ssh
       - run:
           name: force apply
-          command: ././circleci/scripts/run.sh apply
+          command: ./.circleci/scripts/run.sh apply
       - store_artifacts:
           path: ~/repo
           destination: tfresult
@@ -90,7 +90,7 @@ jobs:
           at: ~/.ssh
       - run:
           name: apply
-          command: ././circleci/scripts/run.sh destroy
+          command: ./.circleci/scripts/run.sh destroy
       - store_artifacts:
           path: ~/repo
           destination: tfdestroy
