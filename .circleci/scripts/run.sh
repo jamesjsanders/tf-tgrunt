@@ -1,22 +1,19 @@
 #!/bin/bash
 
-CURDIR=$(PWD)
 changed=()
 changed=$(git whatchanged --oneline --name-only --format="" -n1)
 
 function ENVVAR {
-  THISDIR=$(PWD)
-  echo \#\!\/bin\/bash > $THISDIR/env.sh
-  chmod 775 $THISDIR/env.sh
+  echo \#\!\/bin\/bash > ../env.sh && chmod 775 ../env.sh
   DIRS=$(find . -type d -maxdepth 1 -mindepth 1 -exec basename {} \; |grep -v .terraform)
   for DIR in $DIRS; do
   echo $DIR
     echo -n "" > $DIR/env.yaml
-    for VARNAME in $(cat $CURDIR/.circleci/env-vars); do 
+    for VARNAME in $(cat ../.circleci/env-vars); do
       LOWVAR=$(echo $VARNAME | tr '[:upper:]' '[:lower:]')
-      echo echo\ $LOWVAR\\\:\\\ \\\"\$$VARNAME\\\"\ \>\>\ $DIR/env.yaml >> $THISDIR/env.sh
+      echo echo\ $LOWVAR\\\:\\\ \\\"\$$VARNAME\\\"\ \>\>\ $DIR/env.yaml >> ../env.sh
     done
-    bash -c "$THISDIR/env.sh"
+    bash -c "../env.sh"
   done
 }
 
@@ -63,11 +60,11 @@ case $1 in
   ;;
 esac
 
-[[ $sandbox     ]] && cd sandbox     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi
-[[ $testing     ]] && cd testing     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
-[[ $development ]] && cd development && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
-[[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
-[[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN; fi 
+[[ $sandbox     ]] && cd sandbox     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
+[[ $testing     ]] && cd testing     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
+[[ $development ]] && cd development && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
+[[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
+[[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
 
 if [ $? -ge 0 ]; then
   echo "terragrunt $CMD successful"
