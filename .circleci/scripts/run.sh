@@ -1,7 +1,9 @@
 #!/bin/bash
 
-changed=()
-changed=$(git whatchanged --oneline --name-only --format="" -n1)
+CHANGED=()
+GITTAGS=()
+CHANGED=$(git whatchanged --oneline --name-only --format="" -n1)
+GITTAGS=$(git tag -l --points-at HEAD)
 
 function ENVVAR {
   echo \#\!\/bin\/bash > ../env.sh && chmod 775 ../env.sh
@@ -21,7 +23,7 @@ function RUN {
   terragrunt $CMD --input=false --terragrunt-non-interactive
 }
 
-for path in ${changed[@]}; do
+for path in ${CHANGED[@]}; do
   case ${path%%/*} in
   production)
     production=true
