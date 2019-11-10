@@ -89,7 +89,7 @@ jobs:
       - attach_workspace:
           at: ~/.ssh
       - run:
-          name: apply
+          name: destroy
           command: ./.circleci/scripts/run.sh destroy
       - store_artifacts:
           path: ~/repo
@@ -144,9 +144,8 @@ workflows:
           requires:
             - destroy-approval
           filters:
+            tags:
+              only: /^Destroy-((0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-[12]\d{3}).*/
             branches:
               only: 
                 - master
-          filters:
-            tags:
-              only: /^Destroy-((0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-[12]\d{3}).*/
