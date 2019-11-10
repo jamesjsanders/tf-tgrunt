@@ -70,6 +70,24 @@ jobs:
       - store_artifacts:
           path: ~/repo
           destination: tfresult
+  force-apply:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - attach_workspace:
+          at: ~/.aws
+      - attach_workspace:
+          at: ~/.ssh
+      - run:
+          name: env passwords
+          command:  echo -e rds_db_root_password\:\ \"$RDS_DB_ROOT_PASSWORD\" > ~/repo/prorated/aws/us-east-1/env.yaml
+      - run:
+          name: force apply
+          command: cd ~/repo/prorated/aws && terragrunt apply-all --input=false --terragrunt-non-interactive
+      - store_artifacts:
+          path: ~/repo
+          destination: tfresult
   destroy:
     <<: *defaults
     steps:
@@ -96,6 +114,21 @@ workflows:
       - plan:
           requires:
             - init
+      - force-approval:
+          type: approval
+          requires:
+            - init
+          filters:
+            branches:
+              only: 
+                - master
+      - force-apply:
+          requires:
+            - force-approval
+          filters:
+            branches:
+              only: 
+                - master
       - approval:
           type: approval
           requires:
@@ -128,4 +161,3 @@ workflows:
                 - master
             tags:
               only: /^Destroy-((0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])-[12]\d{3}).*/
-
