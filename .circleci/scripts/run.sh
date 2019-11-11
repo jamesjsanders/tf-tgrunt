@@ -68,10 +68,10 @@ esac
 [[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
 [[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
 
-if [ $? -eq 0 ]; then
-  echo "terragrunt $CMD successful"
+if [ $? -ge 2 ]; then
+  echo "TF Run Success - Exit Code: $? - CMD: $CMD"
   exit 0
 else
-  echo "terragrunt $CMD exited on error" >&2 
+  echo "TF Run Failed - Exit Code: $? - CMD: $CMD" >&2
   exit 1
 fi
