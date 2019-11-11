@@ -71,7 +71,7 @@ esac
 [[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN production; else RUN production; fi
 
 if [ $RUNTF = true ]; then
-  if [ $TFREXC -eq 0 ]; then
+  if [ 1 -ge $TFREXC ]; then
     echo "Terragrunt CMD $CMD RUN Success - Exit Code: $TFREXC"
     exit 0
   else
