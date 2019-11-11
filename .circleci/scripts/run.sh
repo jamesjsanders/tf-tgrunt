@@ -68,7 +68,7 @@ esac
 [[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
 [[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
 
-if [ $? -ge 0 ]; then
+if [ $? -eq 0 ]; then
   echo "terragrunt $CMD successful"
   exit 0
 else
