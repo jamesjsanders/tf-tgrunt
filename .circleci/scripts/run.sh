@@ -1,7 +1,6 @@
 #!/bin/bash
 
-CHANGED=()
-GITTAGS=()
+RUNTF=false
 CHANGED=$(git whatchanged --oneline --name-only --format="" -n1)
 GITTAGS=$(git tag -l --points-at HEAD)
 
@@ -19,8 +18,11 @@ function ENVVAR {
   done
 }
 
-function RUN {
+RUN() {
+  RUNTF=true
+  echo "Terragrunt Running CMD: $CMD - Environment: $1"
   terragrunt $CMD --input=false --terragrunt-non-interactive
+  TFREXC=$?
 }
 
 for path in ${CHANGED[@]}; do
@@ -62,16 +64,20 @@ case $1 in
   ;;
 esac
 
-[[ $sandbox     ]] && cd sandbox     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
-[[ $testing     ]] && cd testing     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
-[[ $development ]] && cd development && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
-[[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
-[[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN; else RUN; fi
+[[ $sandbox     ]] && cd sandbox     && if [ ! $CMD == "init" ]; then ENVVAR; RUN sandbox; else RUN sandbox; fi
+[[ $testing     ]] && cd testing     && if [ ! $CMD == "init" ]; then ENVVAR; RUN testing; else RUN testing; fi
+[[ $development ]] && cd development && if [ ! $CMD == "init" ]; then ENVVAR; RUN development; else RUN development; fi
+[[ $staging     ]] && cd staging     && if [ ! $CMD == "init" ]; then ENVVAR; RUN staging; else RUN staging; fi
+[[ $production  ]] && cd production  && if [ ! $CMD == "init" ]; then ENVVAR; RUN production; else RUN production; fi
 
-if [ $? -ge 2 ]; then
-  echo "TF Run Success - Exit Code: $? - CMD: $CMD"
-  exit 0
-else
-  echo "TF Run Failed - Exit Code: $? - CMD: $CMD" >&2
-  exit 1
+if [ $RUNTF = true ]; then
+  if [ $TFREXC -eq 0 ]; then
+    echo "Terragrunt CMD $CMD RUN Success - Exit Code: $TFREXC"
+    exit 0
+  else
+    echo "Terragrunt CMD $CMD Failed - Exit Code: $TFREXC" >&2
+    exit 1
+  fi
 fi
+
+exit 0
